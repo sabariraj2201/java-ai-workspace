@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Workspace Suite</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Quill.js (Word) -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+    <!-- x-spreadsheet (Excel) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/x-data-spreadsheet@1.1.9/dist/xspreadsheet.css">
+    <script src="https://cdn.jsdelivr.net/npm/x-data-spreadsheet@1.1.9/dist/xspreadsheet.js"></script>
+
+    <!-- PptxGenJS (PowerPoint Export) -->
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS/dist/pptxgen.bundle.js"></script>
+
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+    <nav>
+        <button class="tab-btn active" onclick="switchTab('whiteboard-view', event)">🎨 Whiteboard</button>
+        <button class="tab-btn" onclick="switchTab('word-view', event)">📄 Word Document</button>
+        <button class="tab-btn" onclick="switchTab('excel-view', event)">📊 Excel Sheet</button>
+        <button class="tab-btn" onclick="switchTab('ppt-view', event)">💻 Presentation</button>
+    </nav>
+
+    <!-- 1. Whiteboard -->
+    <div id="whiteboard-view" class="view-panel active">
+        <!-- Keep your existing whiteboard header here -->
+        <header class="tool-bar">
+            <label>Color: <input type="color" id="colorPicker" value="#0284c7"></label>
+            <label>Size: <select id="brushSize"><option value="2">Thin</option><option value="5" selected>Medium</option></select></label>
+            <button id="drawBtn" class="active">Brush</button>
+            <button id="eraseBtn">Eraser</button>
+            <button id="clearBtn" class="btn-danger">Clear All</button>
+        </header>
+        <div class="canvas-wrapper"><canvas id="whiteboard"></canvas></div>
+    </div>
+
+    <!-- 2. Word Document Panel -->
+    <div id="word-view" class="view-panel">
+        <header class="tool-bar">
+            <button id="new-word-btn">📄 New Blank Doc</button>
+            <button id="download-word-btn" style="background-color: #22c55e;">💾 Download as .DOC</button>
+        </header>
+        <div id="editor"></div>
+    </div>
+
+    <!-- 3. Excel Spreadsheet Panel -->
+    <div id="excel-view" class="view-panel">
+        <header class="tool-bar">
+            <button id="new-excel-btn">📊 New Blank Sheet</button>
+            <button id="download-excel-btn" style="background-color: #22c55e;">💾 Download as .CSV</button>
+        </header>
+        <div id="grid-sheet"></div>
+    </div>
+
+    <!-- 4. Presentation Panel -->
+    <div id="ppt-view" class="view-panel">
+        <header class="tool-bar">
+            <button id="new-ppt-btn">💻 New Blank Slide</button>
+            <button onclick="addSlideText(true)">+ Add Text Box</button>
+            <button id="download-ppt-btn" style="background-color: #22c55e;">💾 Download as .PPTX</button>
+        </header>
+        <div id="ppt-stage">
+            <div class="slide" id="current-slide">
+                <div contenteditable="true" class="slide-element title">Click to edit title</div>
+                <div contenteditable="true" class="slide-element subtitle">Click to edit subtitle</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        function switchTab(viewId, event) {
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            event.target.classList.add('active');
+            if(viewId === 'whiteboard-view' && window.resizeCanvas) window.resizeCanvas();
+        }
+    </script>
+    <script src="js/whiteboard.js"></script>
+    <script src="js/document.js"></script>
+    <script src="js/spreadsheet.js"></script>
+    <script src="js/presentation.js"></script>
+</body>
+</html>
